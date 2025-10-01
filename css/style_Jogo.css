@@ -1,0 +1,117 @@
+/* Fundo preto com leve textura */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* Container principal */
+h1 {
+    color: #ff7f00; /* laranja */
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+
+p {
+    font-size: 1.1rem;
+}
+
+/* Feedback de respostas */
+.feedback {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.feedback.acerto {
+    background-color: rgba(0, 128, 0, 0.3); /* verde transparente */
+    color: #00ff00;
+}
+
+.feedback.erro {
+    background-color: rgba(255, 0, 0, 0.3); /* vermelho transparente */
+    color: #ff4d4d;
+}
+
+/* Formulário de perguntas */
+form {
+    background: #111;
+    border: 2px solid #ff7f00;
+    border-radius: 10px;
+    display: inline-block;
+    padding: 20px;
+    max-width: 600px;
+    width: 90%;
+    margin-top: 20px;
+    box-shadow: 0 0 15px rgba(255,127,0,0.4);
+    transition: transform 0.3s ease;
+}
+
+form:hover {
+    transform: scale(1.02);
+}
+
+/* Alternativas */
+label {
+    display: block;
+    background: #222;
+    border: 1px solid #ff7f00;
+    border-radius: 6px;
+    margin: 8px 0;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+label:hover {
+    background: #ff7f00;
+    color: #000;
+    transform: scale(1.02);
+}
+
+input[type="radio"] {
+    margin-right: 10px;
+}
+
+/* Botão responder */
+button {
+    background: #ff7f00;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: #e06a00;
+    transform: scale(1.05);
+}
+
+/* Links */
+a {
+    color: #ff7f00;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 700px) {
+    form {
+        width: 95%;
+    }
+}

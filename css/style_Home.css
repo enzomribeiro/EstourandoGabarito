@@ -1,0 +1,95 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 30px;
+    background-color: #000; /* fundo preto */
+    color: #fff; /* textos brancos para contraste */
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.img-container {
+    display: flex;
+    justify-content: center; /* centraliza horizontalmente */
+    align-items: center; /* alinha verticalmente */
+    gap: 20px; /* espaço entre as imagens e o form */
+    flex-wrap: wrap; /* permite quebrar linha em telas pequenas */
+    margin: 20px 0;
+}
+
+.img-container img {
+    width: 120px; /* ajuste o tamanho conforme quiser */
+    height: auto;
+}
+
+.img-left {
+    order: 1; /* opcional: garante que fique à esquerda */
+    margin-left: 20%;
+}
+
+.form-box {
+    order: 2; /* central */
+}
+
+.img-right {
+    order: 3; /* opcional: garante que fique à direita */
+    margin-right: 20%;
+}
+
+
+/* Mantendo o estilo original do site */
+h1 {
+    color: #fff;
+}
+
+input, button, select {
+    padding: 10px;
+    margin: 5px;
+    width: 90%;
+    max-width: 250px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background: #ff7f00; /* laranja */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #e06a00;
+}
+
+.form-box {
+    background: #111; /* fundo escuro do container */
+    border: 2px solid #ff7f00;
+    border-radius: 8px;
+    max-width: 350px;
+    margin: 20px auto;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(255,127,0,0.3);
+}
+
+.menu {
+    margin-top: 30px;
+}
+
+.menu a {
+    display: inline-block;
+    margin: 10px;
+    padding: 12px 20px;
+    background: #ff7f00;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.menu a:hover {
+    background: #e06a00;
+}
