@@ -28,6 +28,9 @@ SET time_zone = "+00:00";
 -- Estrutura da tabela `admins`
 --
 
+CREATE DATABASE IF NOT EXISTS `quiztec`;
+USE `quiztec`;
+
 DROP TABLE IF EXISTS `admins`;
 CREATE TABLE IF NOT EXISTS `admins` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
