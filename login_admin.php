@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <head>
 <meta charset="UTF-8">
 <title>Login Admin - QuizTec</title>
-<link rel="stylesheet" href="style_Admin.css">
+<link rel="stylesheet" href="css/style_Admin.css">
 </head>
 <body>
 <h1>Login Admin</h1>

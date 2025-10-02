@@ -84,6 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['update_id'])) {
             <option value="Filmes">Filmes</option>
             <option value="Esportes">Esportes</option>
             <option value="Ciência">Ciência</option>
+            <option value="Biologia">Biologia</option>
             <option value="Games">Games</option>
             <option value="História">História</option>
         </select><br><br>

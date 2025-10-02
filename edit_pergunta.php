@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Editar Pergunta - QuizTec</title>
-    <link rel="stylesheet" href="style_Admin.css">
+    <link rel="stylesheet" href="css/style_Admin.css">
 </head>
 <body>
 <h1>Editar Pergunta</h1>
@@ -65,6 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <option value="Filmes"  <?= ($pergunta['categoria']=="Filmes"?"selected":"") ?>>Filmes</option>
             <option value="Esportes"<?= ($pergunta['categoria']=="Esportes"?"selected":"") ?>>Esportes</option>
             <option value="Ciência" <?= ($pergunta['categoria']=="Ciência"?"selected":"") ?>>Ciência</option>
+            <option value="Biologia" <?= ($pergunta['categoria']=="Biologia"?"selected":"") ?>>Biologia</option>
             <option value="Games"   <?= ($pergunta['categoria']=="Games"?"selected":"") ?>>Games</option>
             <option value="História"<?= ($pergunta['categoria']=="História"?"selected":"") ?>>História</option>
         </select><br><br>
