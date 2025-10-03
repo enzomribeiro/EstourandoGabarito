@@ -31,19 +31,19 @@ $resto = array_slice($rows, 3);
         <?php if (!empty($top3[0])): ?>
             <div class="trofeu primeiro">
                 <span>🥇</span>
-                <p><?= htmlspecialchars($top3[0]['nome']) ?> - <?= $top3[0]['pontos'] ?> pts</p>
+                <p><?= htmlspecialchars($top3[0]['nome']) ?> • <?= $top3[0]['pontos'] ?> pts</p>
             </div>
         <?php endif; ?>
         <?php if (!empty($top3[1])): ?>
             <div class="trofeu segundo">
                 <span>🥈</span>
-                <p><?= htmlspecialchars($top3[1]['nome']) ?> - <?= $top3[1]['pontos'] ?> pts</p>
+                <p><?= htmlspecialchars($top3[1]['nome']) ?> • <?= $top3[1]['pontos'] ?> pts</p>
             </div>
         <?php endif; ?>
         <?php if (!empty($top3[2])): ?>
             <div class="trofeu terceiro">
                 <span>🥉</span>
-                <p><?= htmlspecialchars($top3[2]['nome']) ?> - <?= $top3[2]['pontos'] ?> pts</p>
+                <p><?= htmlspecialchars($top3[2]['nome']) ?> • <?= $top3[2]['pontos'] ?> pts</p>
             </div>
         <?php endif; ?>
     </div>
