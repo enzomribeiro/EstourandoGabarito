@@ -1,7 +1,7 @@
 <?php
 $host = "localhost";
 $user = "root";   // padrão do Wamp
-$pass = "2007";       // padrão do Wamp (senha vazia)
+$pass = "";       // padrão do Wamp (senha vazia)
 $db   = "quiztec";
 
 $conn = new mysqli($host, $user, $pass, $db);
