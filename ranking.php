@@ -1,5 +1,6 @@
 <?php
 // ranking.php
+session_start();
 include 'conexao.php'; // garante que puxa o arquivo da mesma pasta
 
 // Pegar jogadores ordenados por pontos
@@ -50,11 +51,12 @@ $resto = array_slice($rows, 3);
 
     <!-- Tabela dos demais -->
     <table>
-        <tr><th>Posição</th><th>Jogador</th><th>Pontos</th></tr>
+        <tr><th>ID Jogador</th><th>Posição</th><th>Jogador</th><th>Pontos</th></tr>
         <?php 
-        $pos = 1;
-        foreach ($rows as $row) {
+        $pos = 4;
+        foreach ($resto as $row) {
             echo "<tr>
+                    <td>" . $row['id'] . "</td>
                     <td>$pos</td>
                     <td>" . htmlspecialchars($row['nome']) . "</td>
                     <td>" . $row['pontos'] . "</td>
