@@ -1,5 +1,6 @@
 <?php
 session_start();
+session_regenerate_id(true);
 include "conexao.php";
 
 $error = "";
@@ -12,13 +13,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome      = trim($_POST['nome'] ?? "");
     $categoria = $_POST['categoria'] ?? "Geral";
 
-    // guarda para reapresentar em caso de erro
+    // Guarda para reapresentar em caso de erro
     $codigo_val = htmlspecialchars($codigo, ENT_QUOTES);
-    $nome_val = htmlspecialchars($nome, ENT_QUOTES);
+    $nome_val   = htmlspecialchars($nome, ENT_QUOTES);
     $categoria_val = $categoria;
-
-    // salva a categoria na sessão
-    $_SESSION['categoria'] = $categoria;
 
     // Validações básicas
     if ($codigo === "" || $nome === "") {
@@ -31,11 +29,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $res = $stmt->get_result();
 
         if ($res && $res->num_rows > 0) {
-            // Código já existe -> faz login (usa o jogador existente)
+            // Código já existe -> faz login
             $jogador = $res->fetch_assoc();
+            session_regenerate_id(true); // Gera novo ID de sessão
             $_SESSION['jogador_id'] = $jogador['id'];
-            // opcional: atualizar nome no session
             $_SESSION['jogador_nome'] = $jogador['nome'];
+            $_SESSION['categoria'] = $categoria;
             $stmt->close();
             header("Location: jogo.php");
             exit;
@@ -49,17 +48,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $res_nome = $stmt->get_result();
 
         if ($res_nome && $res_nome->num_rows > 0) {
-            // Nome já existe -> não permite cadastrar
             $error = "⚠️ Este nome já está em uso. Escolha outro nome.";
             $stmt->close();
         } else {
             $stmt->close();
-            // 3) Insere novo jogador (nome e código são únicos aqui)
+            // 3) Insere novo jogador
             $stmt = $conn->prepare("INSERT INTO jogadores (codigo, nome) VALUES (?, ?)");
             $stmt->bind_param("ss", $codigo, $nome);
             if ($stmt->execute()) {
+                session_regenerate_id(true); // Novo ID de sessão
                 $_SESSION['jogador_id'] = $conn->insert_id;
                 $_SESSION['jogador_nome'] = $nome;
+                $_SESSION['categoria'] = $categoria;
                 $stmt->close();
                 header("Location: jogo.php");
                 exit;
@@ -81,16 +81,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <h1>Bem-vindo ao Estourando o Gabarito</h1>
 
-    <!-- Container com imagens e formulário central -->
     <div class="img-container">
-        <img src="int.png" class="img-left">
-        
         <div class="form-box">
             <h2>Entrar no Jogo</h2>
-
-            <!-- mostra mensagem de erro, se houver -->
             <?php if ($error): ?>
-                <p style="color: #b00020; font-weight:bold; text-align:center;"><?= $error ?></p>
+                <p style="color: #ff3b3b; font-weight:bold;"><?= $error ?></p>
             <?php endif; ?>
 
             <form method="post">
@@ -99,23 +94,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <label>Escolha o Tema:</label><br>
                 <select name="categoria" required>
-                    <option value="Geral"   <?= $categoria_val === "Geral" ? "selected" : "" ?>>Geral</option>
-                    <option value="Filmes"  <?= $categoria_val === "Filmes" ? "selected" : "" ?>>Filmes</option>
-                    <option value="Esportes"<?= $categoria_val === "Esportes" ? "selected" : "" ?>>Esportes</option>
-                    <option value="Games"   <?= $categoria_val === "Games" ? "selected" : "" ?>>Games</option>
-                    <option value="Ciência" <?= $categoria_val === "Ciência" ? "selected" : "" ?>>Ciência</option>
-                    <option value="Biologia"<?= $categoria_val === "Biologia" ? "selected" : "" ?>>Biologia</option>
-                    <option value="História"<?= $categoria_val === "História" ? "selected" : "" ?>>História</option>
+                    <?php
+                    $categorias = ["Geral","Filmes","Esportes","Games","Ciência","Biologia","História"];
+                    foreach($categorias as $cat) {
+                        $sel = $categoria_val === $cat ? "selected" : "";
+                        echo "<option value='$cat' $sel>$cat</option>";
+                    }
+                    ?>
                 </select><br><br>
 
                 <button type="submit">Entrar</button>
             </form>
         </div>
 
-        <img src="int.png" class="img-right">
+        <div class="img-right">
+            <img src="int.png" alt="Interrogação girando">
+        </div>
     </div>
 
-    <!-- Menu -->
     <div class="menu">
         <a href="ranking.php">🏆 Ver Ranking</a>
         <a href="admin.php">⚙️ Área do Admin</a>
