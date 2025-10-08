@@ -20,8 +20,14 @@ CREATE TABLE jogadores (
   pontos INTEGER DEFAULT 0
 );
 
-INSERT INTO jogadores (id, codigo, nome, pontos) VALUES
-(20, '1', 'TESTE', 0);
+INSERT INTO `jogadores` (`id`, `codigo`, `nome`, `pontos`) VALUES
+(5, '2', 'Vitinho', 300),
+(6, '7', 'MARI', 100),
+(7, '4', 'MARI', 700),
+(8, '9', 'fff', 300),
+(9, '5', 'Enzo', 200),
+(10, '1234', '', 1000),
+(11, '123', 'Guilherme', 3100);
 
 -- Tabela: perguntas
 DROP TABLE IF EXISTS perguntas;

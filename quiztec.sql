@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: 02-Out-2025 às 17:58
+-- Generation Time: 01-Out-2025 às 20:48
 -- Versão do servidor: 5.7.26
 -- versão do PHP: 7.2.18
 
@@ -27,9 +27,7 @@ SET time_zone = "+00:00";
 --
 -- Estrutura da tabela `admins`
 --
-
-CREATE DATABASE IF NOT EXISTS `quiztec`;
-USE `quiztec`;
+CREATE DATABASE quizetec;
 
 DROP TABLE IF EXISTS `admins`;
 CREATE TABLE IF NOT EXISTS `admins` (
@@ -61,14 +59,20 @@ CREATE TABLE IF NOT EXISTS `jogadores` (
   `pontos` int(11) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `codigo` (`codigo`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 --
 -- Extraindo dados da tabela `jogadores`
 --
 
 INSERT INTO `jogadores` (`id`, `codigo`, `nome`, `pontos`) VALUES
-(20, '1', 'TESTE', 0);
+(5, '2', 'Vitinho', 300),
+(6, '7', 'MARI', 100),
+(7, '4', 'MARI', 700),
+(8, '9', 'fff', 300),
+(9, '5', 'Enzo', 200),
+(10, '1234', '', 1000),
+(11, '123', 'Guilherme', 3100);
 
 -- --------------------------------------------------------
 
@@ -87,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `perguntas` (
   `correta` char(1) COLLATE utf8mb4_bin NOT NULL,
   `categoria` varchar(50) COLLATE utf8mb4_bin NOT NULL DEFAULT 'Geral',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 --
 -- Extraindo dados da tabela `perguntas`
@@ -158,14 +162,7 @@ INSERT INTO `perguntas` (`id`, `enunciado`, `alternativa_a`, `alternativa_b`, `a
 (64, 'Qual das seguintes opções é um exemplo de um mamífero?', 'Morcego', 'Tubarão', 'Pinguim', 'Jacaré', 'A', 'Ciência'),
 (65, 'Qual a empresa desenvolveu a franquia Uncharted?', 'Square Enix', 'Ubisoft', 'Naughty Dog', 'Rockstar Games', 'C', 'Games'),
 (66, 'Quem guia o jogador como kaioshin do tempo em Dragon Ball Xenoverse 2?', 'Vados', 'Chronoa', 'Whis', 'Bulma', 'B', 'Games'),
-(67, 'Qual a alternativa apresenta seis biomas brasileiros?', 'Floresta Amazônica, Mata Atlântica, Cerrado, Caatinga, Pantanal e Pampas.', 'Acre, Bahia, Pará, Pernambuco, Sergipe e Manaus.', 'Areia, barro, pedra, argila, palha e seixo.', 'Rio, igarapé, praia, riacho, cachoeira e nascente.', 'A', 'Ciência'),
-(68, 'Qual destas doenças NÃO são causadas por bactérias ?', 'Tuberculose', 'Dengue', ' Botulismo', 'Leptospirose', 'B', 'Biologia'),
-(69, 'Uma campanha destinada a evitar a proliferação de mosquitos que transmitem a DENGUE, extinguiria ao mesmo tempo os transmissores da:', 'Doença de Chagas', 'Esquistossomose', 'Febre Amarela', 'Poliomielite', 'C', 'Biologia'),
-(70, 'O uso de drogas injetáveis com o compartilhamento de seringas e agulhas não esterilizadas e um grave fator de risco para a transmissão de diversas soenças exceto:', 'Sifilis', 'Hepatite A', 'Hepatite B', 'AIDS', 'A', 'Biologia'),
-(71, 'Para não se contraírem doenças como Cisticercose e Teníase devem se evitar:', 'Nadar em lagoas desconhecidas', 'Andar descalço', 'Comer carne Suína e Bovina malpassada', 'Comer verduras mal lavadas', 'C', 'Biologia'),
-(72, 'Assinale a alternativa que apresenta parasitas que NÃO envolvem mosquito como agente transmissor', 'Elefantíase', 'Leishmaniose', 'Malária', 'Esquistossomose', 'D', 'Biologia'),
-(73, '(Fuvest) Uma pessoa tem alergia a moluscos. Em um restaurante onde são servidos \"Frutos Do Mar\", ela pode comer, sem problemas, pratos que contenham:', 'Lula e Camarão', 'Polvo e Caranguejo', 'Mexilhão e Lagosta', 'Lula e Polvo', 'D', 'Biologia'),
-(74, 'Qual é o vetor da Doença de Chagas?', 'Mosquito', 'Barbeiro', 'Carrapato', 'Mosca', 'B', 'Biologia');
+(67, 'Qual a alternativa apresenta seis biomas brasileiros?', 'Floresta Amazônica, Mata Atlântica, Cerrado, Caatinga, Pantanal e Pampas.', 'Acre, Bahia, Pará, Pernambuco, Sergipe e Manaus.', 'Areia, barro, pedra, argila, palha e seixo.', 'Rio, igarapé, praia, riacho, cachoeira e nascente.', 'A', 'Ciência');
 
 -- --------------------------------------------------------
 
@@ -183,7 +180,7 @@ CREATE TABLE IF NOT EXISTS `respostas` (
   PRIMARY KEY (`id`),
   KEY `jogador_id` (`jogador_id`),
   KEY `pergunta_id` (`pergunta_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=170 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 --
 -- Extraindo dados da tabela `respostas`
@@ -282,83 +279,7 @@ INSERT INTO `respostas` (`id`, `jogador_id`, `pergunta_id`, `resposta`, `correta
 (90, 11, 39, 'C', 1),
 (91, 11, 41, 'A', 1),
 (92, 11, 43, 'C', 0),
-(93, 11, 44, 'D', 1),
-(94, 11, 50, 'C', 1),
-(95, 11, 55, 'D', 1),
-(96, 11, 64, 'A', 1),
-(97, 11, 36, 'C', 0),
-(98, 11, 67, 'A', 1),
-(99, 11, 38, 'D', 1),
-(100, 11, 40, 'D', 0),
-(101, 11, 42, 'C', 1),
-(102, 11, 45, 'A', 1),
-(103, 11, 46, 'C', 0),
-(104, 11, 47, 'A', 1),
-(105, 11, 49, 'B', 1),
-(106, 11, 51, 'C', 1),
-(107, 11, 53, 'D', 1),
-(108, 11, 54, 'B', 1),
-(109, 11, 56, 'C', 0),
-(110, 11, 58, 'A', 0),
-(111, 11, 59, 'D', 1),
-(112, 11, 60, 'D', 0),
-(113, 11, 61, 'D', 1),
-(114, 11, 63, 'C', 0),
-(115, 11, 48, 'D', 0),
-(116, 11, 65, 'A', 0),
-(117, 11, 52, 'B', 0),
-(118, 11, 57, 'C', 0),
-(119, 11, 66, 'C', 0),
-(120, 12, 36, 'A', 1),
-(121, 12, 38, 'C', 0),
-(122, 12, 40, 'D', 0),
-(123, 12, 42, 'D', 0),
-(124, 12, 45, 'D', 0),
-(125, 12, 46, 'D', 1),
-(126, 12, 47, 'A', 1),
-(127, 12, 49, 'D', 0),
-(128, 12, 51, 'D', 0),
-(129, 12, 53, 'D', 1),
-(130, 12, 54, 'D', 0),
-(131, 12, 56, 'D', 0),
-(132, 12, 58, 'D', 0),
-(133, 12, 59, 'D', 1),
-(134, 12, 60, 'D', 0),
-(135, 12, 61, 'D', 1),
-(136, 12, 63, NULL, 0),
-(137, 12, 65, NULL, 0),
-(138, 12, 66, NULL, 0),
-(139, 12, 1, NULL, 0),
-(140, 12, 4, NULL, 0),
-(141, 12, 5, NULL, 0),
-(142, 12, 7, NULL, 0),
-(143, 12, 11, 'B', 0),
-(144, 12, 19, 'C', 1),
-(145, 12, 20, 'D', 1),
-(146, 12, 21, NULL, 0),
-(147, 13, 1, 'C', 0),
-(148, 13, 4, 'C', 0),
-(149, 13, 5, 'D', 0),
-(150, 13, 7, 'D', 0),
-(151, 13, 11, 'D', 0),
-(152, 13, 19, 'D', 0),
-(153, 13, 20, 'B', 0),
-(154, 13, 21, 'C', 1),
-(155, 13, 22, 'D', 0),
-(156, 13, 23, 'D', 0),
-(157, 10, 68, 'C', 1),
-(158, 15, 1, 'C', 0),
-(159, 16, 1, 'C', 0),
-(160, 16, 4, 'D', 0),
-(161, 16, 5, 'D', 0),
-(162, 16, 7, 'C', 0),
-(163, 16, 11, 'D', 0),
-(164, 16, 19, 'D', 0),
-(165, 16, 20, 'C', 0),
-(166, 16, 21, 'D', 0),
-(167, 16, 22, 'A', 0),
-(168, 16, 23, 'D', 0),
-(169, 16, 68, 'D', 0);
+(93, 11, 44, 'D', 1);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
