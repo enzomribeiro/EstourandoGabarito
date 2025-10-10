@@ -3,17 +3,29 @@
 include 'conexao.php'; // garante que puxa o arquivo da mesma pasta
 
 // Pegar jogadores ordenados por pontos
-$sql = "SELECT * FROM jogadores ORDER BY pontos DESC";
-$res = $conn->query($sql);
+// $sql = "SELECT * FROM jogadores ORDER BY pontos DESC";
+// $res = $conn->query($sql);
 
-$rows = [];
-while ($row = $res->fetch_assoc()) {
-    $rows[] = $row;
-}
+// $rows = [];
+// while ($row = $res->fetch_assoc()) {
+//     $rows[] = $row;
+// }
 
+// Adaptação ao PDO
+$stmt = $pdo->query('SELECT * FROM jogadores ORDER BY pontos DESC');
+// while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+//     echo $row['nome'] . "<br>";
+// }
+
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// echo "<pre>";
+// print_r($rows);
+// echo "</pre>";
+// die();
 // Separar top3 e resto
-$top3 = array_slice($rows, 0, 3);
-$resto = array_slice($rows, 3);
+// $top3 = array_slice($rows, 0, 3);
+// $resto = array_slice($rows, 3);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

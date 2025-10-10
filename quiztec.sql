@@ -27,7 +27,9 @@ SET time_zone = "+00:00";
 --
 -- Estrutura da tabela `admins`
 --
+
 CREATE DATABASE quizetec;
+USE quizetec;
 
 DROP TABLE IF EXISTS `admins`;
 CREATE TABLE IF NOT EXISTS `admins` (

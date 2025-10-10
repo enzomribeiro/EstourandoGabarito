@@ -1,60 +1,27 @@
-<?php 
+<?php
 session_start();
-include "conexao.php";
+include "conexao.php"; // Defina o PDO em conexao.php
 
-// Verifica se o admin está logado
-if (!isset($_SESSION['admin'])) {
-    header("Location: login_admin.php");
-    exit;
-}
+$erro = "";
 
-// Função para deletar pergunta
-if (isset($_GET['delete'])) {
-    $id = (int)$_GET['delete'];
-    $conn->query("DELETE FROM perguntas WHERE id=$id");
-    header("Location: admin.php");
-    exit;
-}
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    $usuario = trim($_POST['usuario']);
+    $senha = trim($_POST['senha']);
 
-// Função para atualizar pergunta
-if (isset($_POST['update_id'])) {
-    $id = (int)$_POST['update_id'];
+    // Usando PDO com prepared statements para segurança
+    $sql = "SELECT * FROM admins WHERE usuario = :usuario AND senha = SHA2(:senha, 256)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':usuario', $usuario, PDO::PARAM_STR);
+    $stmt->bindParam(':senha', $senha, PDO::PARAM_STR);
+    $stmt->execute();
 
-    $enunciado = $conn->real_escape_string($_POST['enunciado']);
-    $a = $conn->real_escape_string($_POST['a']);
-    $b = $conn->real_escape_string($_POST['b']);
-    $c = $conn->real_escape_string($_POST['c']);
-    $d = $conn->real_escape_string($_POST['d']);
-    $correta = strtoupper($conn->real_escape_string($_POST['correta']));
-    $categoria = $conn->real_escape_string($_POST['categoria']);
-
-    $conn->query("UPDATE perguntas SET 
-        enunciado='$enunciado', 
-        alternativa_a='$a', 
-        alternativa_b='$b', 
-        alternativa_c='$c', 
-        alternativa_d='$d', 
-        correta='$correta', 
-        categoria='$categoria' 
-        WHERE id=$id");
-
-    header("Location: admin.php");
-    exit;
-}
-
-// Cadastro de nova pergunta
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['update_id'])) {
-    $enunciado = $conn->real_escape_string($_POST['enunciado']);
-    $a = $conn->real_escape_string($_POST['a']);
-    $b = $conn->real_escape_string($_POST['b']);
-    $c = $conn->real_escape_string($_POST['c']);
-    $d = $conn->real_escape_string($_POST['d']);
-    $correta = strtoupper($conn->real_escape_string($_POST['correta']));
-    $categoria = $conn->real_escape_string($_POST['categoria']);
-
-    $sql = "INSERT INTO perguntas (enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, correta, categoria) 
-            VALUES ('$enunciado', '$a', '$b', '$c', '$d', '$correta', '$categoria')";
-    $conn->query($sql);
+    if ($stmt->rowCount() == 1) {
+        $_SESSION['admin'] = $usuario;
+        header("Location: admin.php");
+        exit;
+    } else {
+        $erro = "Usuário ou senha incorretos!";
+    }
 }
 ?>
 
@@ -62,71 +29,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['update_id'])) {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - QuizTec</title>
+    <title>Login Admin - QuizTec</title>
     <link rel="stylesheet" href="css/style_Admin.css">
 </head>
 <body>
-<h1>Admin - Gerenciar Perguntas</h1>
-<p>Logado como: <?php echo htmlspecialchars($_SESSION['admin']); ?> | <a href="logout_admin.php">Logout</a></p>
+<h1>Login Admin</h1>
 
-<div class="form-box">
-    <h2>Cadastrar Nova Pergunta</h2>
-    <form method="post">
-        <input type="text" name="enunciado" placeholder="Pergunta" required><br>
-        <input type="text" name="a" placeholder="Alternativa A" required><br>
-        <input type="text" name="b" placeholder="Alternativa B" required><br>
-        <input type="text" name="c" placeholder="Alternativa C" required><br>
-        <input type="text" name="d" placeholder="Alternativa D" required><br>
-        <input type="text" name="correta" placeholder="Letra correta (A/B/C/D)" required><br>
-        <label>Categoria:</label>
-        <select name="categoria" required>
-            <option value="Geral">Geral</option>
-            <option value="Filmes">Filmes</option>
-            <option value="Esportes">Esportes</option>
-            <option value="Ciência">Ciência</option>
-            <option value="Biologia">Biologia</option>
-            <option value="Games">Games</option>
-            <option value="História">História</option>
-        </select><br><br>
-        <button type="submit">Cadastrar</button>
-    </form>
-</div>
+<?php if ($erro) echo "<p style='color:red;'>$erro</p>"; ?>
 
-<div class="table-container">
-    <h2>Perguntas Cadastradas</h2>
-    <div class="button"><a href="index.php">HOME</a></div>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Pergunta</th>
-            <th>A</th>
-            <th>B</th>
-            <th>C</th>
-            <th>D</th>
-            <th>Correta</th>
-            <th>Categoria</th>
-            <th>Ações</th>
-        </tr>
-        <?php
-        $perguntas = $conn->query("SELECT * FROM perguntas ORDER BY id DESC");
-        while($p = $perguntas->fetch_assoc()):
-        ?>
-        <tr>
-            <td><?php echo $p['id']; ?></td>
-            <td><?php echo htmlspecialchars($p['enunciado']); ?></td>
-            <td><?php echo htmlspecialchars($p['alternativa_a']); ?></td>
-            <td><?php echo htmlspecialchars($p['alternativa_b']); ?></td>
-            <td><?php echo htmlspecialchars($p['alternativa_c']); ?></td>
-            <td><?php echo htmlspecialchars($p['alternativa_d']); ?></td>
-            <td><?php echo strtoupper($p['correta']); ?></td>
-            <td><?php echo htmlspecialchars($p['categoria']); ?></td>
-            <td>
-                <a class="edit" href="edit_pergunta.php?id=<?php echo $p['id']; ?>">Editar</a> | 
-                <a class="delete" href="admin.php?delete=<?php echo $p['id']; ?>" onclick="return confirm('Tem certeza?')">Excluir</a>
-            </td>
-        </tr>
-        <?php endwhile; ?>
-    </table>
-</div>
+<form method="post">
+    <input type="text" name="usuario" placeholder="Usuário" required><br>
+    <input type="password" name="senha" placeholder="Senha" required><br>
+    <button type="submit">Entrar</button>
+</form>
 </body>
 </html>

@@ -1,15 +1,17 @@
 <?php
-$host = "localhost";
-$user = "root";   // padrão do Wamp
-$pass = "";       // padrão do Wamp (senha vazia)
-$db   = "quiztec";
+	$host = 'localhost';
+	$db_name = 'quizetec';
+	
+	$dsn = "mysql:host=$host;dbname=$db_name;charset=utf8mb4";
+	$username = "root";
+	$pass = '';
+	
+	try{
+		$pdo = new PDO($dsn, $username, $pass);
 
-$conn = new mysqli($host, $user, $pass, $db);
+		$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-if ($conn->connect_error) {
-    die("Erro de conexão: " . $conn->connect_error);
-}
-
-// Força UTF-8 na conexão
-$conn->set_charset("utf8mb4");
+	} catch (PDOException $e){
+		echo "Falha ao conectar: " . $e->getMessage();
+	}
 ?>

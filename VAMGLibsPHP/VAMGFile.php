@@ -11,25 +11,11 @@
             }
         }
 
-        public function addJogador($cod, $nome, $pontos) {
+        public function adicionar_player($cod, $nome) {
             try {
-
-                // Verifica se já existe um jogador com esse código
-                $stmt = $this->db->prepare("SELECT COUNT(*) FROM jogadores WHERE codigo = :cod");
-                $stmt->bindParam(':cod', $gen_num);
-                $stmt->execute();
-                $existe = $stmt->fetchColumn();
-
-                if ($existe > 0) {
-                    echo "Jogador com código $cod já existe.<br>";
-                    return;
-                }
-
-                // Se não existe, insere
-                $stmt = $this->db->prepare("INSERT INTO jogadores (codigo, nome, pontos) VALUES (:cod, :nome, :pontos)");
-                $stmt->bindParam(':cod', $gen_num);
+                $stmt = $this->db->prepare("INSERT INTO jogadores (codigo, nome) VALUES (:cod, :nome)");
+                $stmt->bindParam(':cod', $cod);
                 $stmt->bindParam(':nome', $nome);
-                $stmt->bindParam(':pontos', $pontos);
                 $stmt->execute();
 
                 echo "Jogador inserido com sucesso!<br>";
@@ -54,6 +40,30 @@
                 echo "Erro ao listar perguntas: " . $e->getMessage();
             }
         }
+
+        function AddUserMySQL($newUser, $newPass){
+            $host = 'localhost';
+            $db_name = 'quizetec';
+            $dsn = "mysql:host=$host;dbname=$db_name;charset=utf8mb4";
+            $username = "root";
+            $pass = '';
+
+            try {
+                $pdo = new PDO($dsn, $username, $pass);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                $sql = "INSERT INTO admins (usuario, senha) VALUES (:newUser, SHA2(:newPass, 256))";
+                $stmt = $pdo->prepare($sql);
+                $stmt->bindParam(':newUser', $newUser, PDO::PARAM_STR);
+                $stmt->bindParam(':newPass', $newPass, PDO::PARAM_STR);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                echo "Erro ao adicionar usuário: " . $e->getMessage();
+            }
+        }
     }
 
+    // Faz teste
+    // $backup = new BackupBD();
+    // $backup->AddUserMySQL("Victor Alex Moreira Gouveia", "V123456789");
 ?>

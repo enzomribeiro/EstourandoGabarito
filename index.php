@@ -24,49 +24,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Preencha código e nome corretamente.";
     } else {
         // 1) Verifica se já existe jogador com esse código
-        $stmt = $conn->prepare("SELECT id, nome FROM jogadores WHERE codigo = ? LIMIT 1");
-        $stmt->bind_param("s", $codigo);
+        $sql = "SELECT id, nome FROM jogadores WHERE codigo = :codigo LIMIT 1";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':codigo', $codigo, PDO::PARAM_STR);
         $stmt->execute();
-        $res = $stmt->get_result();
 
-        if ($res && $res->num_rows > 0) {
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($resultado) {
             // Código já existe -> faz login
-            $jogador = $res->fetch_assoc();
             session_regenerate_id(true); // Gera novo ID de sessão
-            $_SESSION['jogador_id'] = $jogador['id'];
-            $_SESSION['jogador_nome'] = $jogador['nome'];
+            $_SESSION['jogador_id'] = $resultado['id'];
+            $_SESSION['jogador_nome'] = $resultado['nome'];
             $_SESSION['categoria'] = $categoria;
-            $stmt->close();
             header("Location: jogo.php");
             exit;
         }
-        $stmt->close();
 
         // 2) Verifica se já existe jogador com esse NOME (case-insensitive)
-        $stmt = $conn->prepare("SELECT id, codigo FROM jogadores WHERE LOWER(nome) = LOWER(?) LIMIT 1");
-        $stmt->bind_param("s", $nome);
-        $stmt->execute();
-        $res_nome = $stmt->get_result();
+        $sql_nome = "SELECT id, codigo FROM jogadores WHERE LOWER(nome) = LOWER(:nome) LIMIT 1";
+        $stmt_nome = $pdo->prepare($sql_nome);
+        $stmt_nome->bindParam(':nome', $nome, PDO::PARAM_STR);
+        $stmt_nome->execute();
+        $res_nome = $stmt_nome->fetch(PDO::FETCH_ASSOC);
 
-        if ($res_nome && $res_nome->num_rows > 0) {
+        if ($res_nome) {
             $error = "⚠️ Este nome já está em uso. Escolha outro nome.";
-            $stmt->close();
         } else {
-            $stmt->close();
             // 3) Insere novo jogador
-            $stmt = $conn->prepare("INSERT INTO jogadores (codigo, nome) VALUES (?, ?)");
-            $stmt->bind_param("ss", $codigo, $nome);
-            if ($stmt->execute()) {
+            $sql_insert = "INSERT INTO jogadores (codigo, nome, categoria) VALUES (:codigo, :nome, :categoria)";
+            $stmt_insert = $pdo->prepare($sql_insert);
+            $stmt_insert->bindParam(':codigo', $codigo, PDO::PARAM_STR);
+            $stmt_insert->bindParam(':nome', $nome, PDO::PARAM_STR);
+            $stmt_insert->bindParam(':categoria', $categoria, PDO::PARAM_STR);
+
+            if ($stmt_insert->execute()) {
                 session_regenerate_id(true); // Novo ID de sessão
-                $_SESSION['jogador_id'] = $conn->insert_id;
+                $_SESSION['jogador_id'] = $pdo->lastInsertId();
                 $_SESSION['jogador_nome'] = $nome;
                 $_SESSION['categoria'] = $categoria;
-                $stmt->close();
+
+                // Registra localmente no banco de dados
+                $backup = new BackupBD();
+                $backup->adicionar_player($codigo, $nome);
+
                 header("Location: jogo.php");
                 exit;
             } else {
                 $error = "Erro ao registrar jogador. Tente novamente.";
-                $stmt->close();
             }
         }
     }

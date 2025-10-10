@@ -9,7 +9,8 @@ CREATE TABLE admins (
 );
 
 INSERT INTO admins (id, usuario, senha) VALUES
-(1, 'admin', '0cc6297150ce07731cd98bb3e25f73a874c8e1f6fb5c1be4dfc20c6887585ca3');
+(1, 'admin', '0cc6297150ce07731cd98bb3e25f73a874c8e1f6fb5c1be4dfc20c6887585ca3'),
+(2, "VAMG", "51:0c:c6:2c:47:4b:14:f2:cb:21:84:b1:9d:78:0d:2c:25:30:c0:01:81:f6:01:09:f5:02:7f:e0:c3:44:95:bc");
 
 -- Tabela: jogadores
 DROP TABLE IF EXISTS jogadores;
