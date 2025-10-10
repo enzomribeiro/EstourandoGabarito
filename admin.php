@@ -15,14 +15,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $stmt->bindParam(':senha', $senha, PDO::PARAM_STR);
     $stmt->execute();
 
-    if ($stmt->rowCount() == 1) {
-        $_SESSION['admin'] = $usuario;
+    // Verifica se retornou algum resultado
+    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($admin) {
+        // Autenticação bem-sucedida
+        $_SESSION['admin'] = $admin['usuario'];
         header("Location: admin.php");
         exit;
     } else {
+        // Falha na autenticação
         $erro = "Usuário ou senha incorretos!";
     }
 }
+
 ?>
 
 <!DOCTYPE html>

@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     if ($stmt->rowCount() == 1) {
         $_SESSION['admin'] = $usuario;
-        header("Location: edit_pergunta.php");
+        header("Location: admin.php");
         exit;
     } else {
         $erro = "Usuário ou senha incorretos!";
