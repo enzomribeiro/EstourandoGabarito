@@ -4,7 +4,7 @@
 
         public function __construct() {
             try {
-                $this->db = new PDO('sqlite:quiztecSQLite.db');
+                $this->db = new PDO("sqlite:" . __DIR__ . "./quiztecSQLite.db");
                 $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $th) {
                 die("Erro de conexão com SQLite: " . $th->getMessage());
@@ -46,7 +46,7 @@
             $db_name = 'quizetec';
             $dsn = "mysql:host=$host;dbname=$db_name;charset=utf8mb4";
             $username = "root";
-            $pass = '';
+            $pass = '12345678';
 
             try {
                 $pdo = new PDO($dsn, $username, $pass);
@@ -64,6 +64,6 @@
     }
 
     // Faz teste
-    // $backup = new BackupBD();
-    // $backup->AddUserMySQL("Victor Alex Moreira Gouveia", "V123456789");
+    $backup = new BackupBD();
+    // $backup->AddUserMySQL("Victor Alex", "");
 ?>

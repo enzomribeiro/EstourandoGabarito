@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $senha = trim($_POST['senha']);
 
     // Usando PDO com prepared statements para segurança
-    $sql = "SELECT * FROM admins WHERE usuario = :usuario AND senha = SHA2(:senha, 256)";
+    $sql = "SELECT * FROM admins WHERE usuario = :usuario AND senha = :senha";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':usuario', $usuario, PDO::PARAM_STR);
     $stmt->bindParam(':senha', $senha, PDO::PARAM_STR);
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if ($admin) {
         // Autenticação bem-sucedida
         $_SESSION['admin'] = $admin['usuario'];
-        header("Location: admin.php");
+        header("Location: login_admin.php");
         exit;
     } else {
         // Falha na autenticação
