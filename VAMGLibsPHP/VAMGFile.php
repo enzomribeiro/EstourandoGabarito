@@ -13,7 +13,8 @@
 
         public function adicionar_player($cod, $nome) {
             try {
-                $stmt = $this->db->prepare("INSERT INTO jogadores (codigo, nome) VALUES (:cod, :nome)");
+                $sql = "INSERT INTO jogadores (codigo, nome) VALUES (:cod, :nome)";
+                $stmt = $this->db->prepare($sql);
                 $stmt->bindParam(':cod', $cod);
                 $stmt->bindParam(':nome', $nome);
                 $stmt->execute();
@@ -32,8 +33,9 @@
 
         public function listarPerguntas() {
             try {
-                $stmt = $this->db->query("SELECT * FROM perguntas");
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $sql = "SELECT * FROM perguntas";
+                $stmt = $this->db->prepare($sql);
+                while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
                     echo $row['enunciado'] . "<br>";
                 }
             } catch (PDOException $e) {
@@ -46,7 +48,7 @@
             $db_name = 'quizetec';
             $dsn = "mysql:host=$host;dbname=$db_name;charset=utf8mb4";
             $username = "root";
-            $pass = '12345678';
+            $pass = '';
 
             try {
                 $pdo = new PDO($dsn, $username, $pass);
@@ -62,8 +64,4 @@
             }
         }
     }
-
-    // Faz teste
-    $backup = new BackupBD();
-    // $backup->AddUserMySQL("Victor Alex", "");
 ?>

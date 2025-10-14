@@ -29,7 +29,7 @@
             $stmt->bindParam(':codigo', $codigo, PDO::PARAM_STR);
             $stmt->execute();
 
-            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if ($resultado) {
                 // Código já existe -> faz login
@@ -46,17 +46,17 @@
             $stmt_nome = $pdo->prepare($sql_nome);
             $stmt_nome->bindParam(':nome', $nome, PDO::PARAM_STR);
             $stmt_nome->execute();
-            $res_nome = $stmt_nome->fetch(PDO::FETCH_ASSOC);
+            $res_nome = $stmt_nome->fetchAll(PDO::FETCH_ASSOC);
 
             if ($res_nome) {
                 $error = "⚠️ Este nome já está em uso. Escolha outro nome.";
             } else {
                 // 3) Insere novo jogador
-                $sql_insert = "INSERT INTO jogadores (codigo, nome, categoria) VALUES (:codigo, :nome, :categoria)";
+                $sql_insert = "INSERT INTO jogadores (codigo, nome) VALUES (:codigo, :nome)";
                 $stmt_insert = $pdo->prepare($sql_insert);
                 $stmt_insert->bindParam(':codigo', $codigo, PDO::PARAM_STR);
                 $stmt_insert->bindParam(':nome', $nome, PDO::PARAM_STR);
-                $stmt_insert->bindParam(':categoria', $categoria, PDO::PARAM_STR);
+                // $stmt_insert->bindParam(':categoria', $categoria, PDO::PARAM_STR);
 
                 if ($stmt_insert->execute()) {
                     session_regenerate_id(true); // Novo ID de sessão
@@ -120,7 +120,7 @@
 
     <div class="menu">
         <a href="ranking.php">🏆 Ver Ranking</a>
-        <a href="admin.php">⚙️ Área do Admin</a>
+        <a href="./login_admin.php">⚙️ Área do Admin</a>
     </div>
 </body>
 </html>

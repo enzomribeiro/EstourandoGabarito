@@ -12,10 +12,17 @@ $jogador_id = (int)$_SESSION['jogador_id'];
 $categoria  = $_SESSION['categoria'];
 
 // Pega dados do jogador
-$result = $conn->query("SELECT nome, pontos FROM jogadores WHERE id=$jogador_id");
-if (!$result) die("Erro na query: " . $conn->error);
-if ($result->num_rows == 0) die("Jogador não encontrado.");
-$dados_jogador = $result->fetch_assoc();
+$result = "SELECT nome, pontos FROM jogadores WHERE id=':jogador_id'";
+$stmt = $pdo->prepare($result);
+$stmt->bindParam(':jogador_id', $jogador_id);
+$count_Line = $stmt->rowCount();
+
+if (!$result) die("Erro na query: " . $e->getMessage);
+if ($$count_Line == 0) die("Jogador não encontrado.");
+
+// $dados_jogador = $result->fetch_assoc();
+$dados_jogador = $stmt->fetchAll();
+
 $pontos = $dados_jogador['pontos'];
 $nome_jogador = $dados_jogador['nome'];
 
@@ -36,12 +43,21 @@ if (!isset($_SESSION['jogo'])) {
 }
 
 // Função para pegar próxima pergunta não respondida
-function proximaPergunta($conn, $categoria, $jogador_id) {
-    return $conn->query("SELECT * FROM perguntas 
-        WHERE categoria='$categoria' 
-        AND id NOT IN (SELECT pergunta_id FROM respostas WHERE jogador_id=$jogador_id) 
-        ORDER BY id ASC
-        LIMIT 1")->fetch_assoc();
+function proximaPergunta($pdo, $categoria, $jogador_id) {
+    $sql = "SELECT * FROM perguntas WHERE categoria=':categoria' AND id NOT IN (SELECT pergunta_id FROM respostas WHERE jogador_id=':jogador_id') ORDER BY id ASC LIMIT 1";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':categoria', $categoria);
+    $stmt->bindParam(':jogador_id', $jogador_id);
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $resultado;
+    // $conn->query("SELECT * FROM perguntas 
+    //     WHERE categoria='$categoria' 
+    //     AND id NOT IN (SELECT pergunta_id FROM respostas WHERE jogador_id=$jogador_id) 
+    //     ORDER BY id ASC
+    //     LIMIT 1")->fetch_assoc();
+
+
 }
 
 // Processa POST de resposta se não estiver em feedback
@@ -50,9 +66,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$_SESSION['jogo']['feedback']) {
 
     // Busca a pergunta atual
     if ($_SESSION['jogo']['pergunta_atual_id']) {
-        $pergunta = $conn->query("SELECT * FROM perguntas WHERE id={$_SESSION['jogo']['pergunta_atual_id']}")->fetch_assoc();
+        $sql = "SELECT * FROM perguntas WHERE id={$_SESSION['jogo']['pergunta_atual_id']}";
+        $stmt = $pdo->prepare($sql);
+        $pergunta = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } else {
-        $pergunta = proximaPergunta($conn, $categoria, $jogador_id);
+        $pergunta = proximaPergunta($pdo, $categoria, $jogador_id);
     }
 
     if ($pergunta) {
@@ -60,12 +78,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$_SESSION['jogo']['feedback']) {
         $correta = ($resposta_usuario == $resposta_correta) ? 1 : 0;
 
         // Salva resposta no banco
-        $conn->query("INSERT INTO respostas (jogador_id, pergunta_id, resposta, correta) 
-                      VALUES ($jogador_id, {$pergunta['id']}, ".($resposta_usuario ? "'$resposta_usuario'" : "NULL").", $correta)");
-
+        $sql = "INSERT INTO respostas (jogador_id, pergunta_id, resposta, correta) VALUES (':jogador_id', ':pergunta', ".(':resposta_usuario' ? "'':resposta_usuario''" : "NULL").", ':correta')";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':jogador_id', $jogador_id);
+        $stmt->bindParam(':resposta_usuario', $resposta_usuario);
+        $stmt->bindParam(':pergunta', $pergunta['id']);
+        $stmt->bindParam(':correta', $correta);
+        
         // Atualiza pontos se acertou
         if ($correta) {
-            $conn->query("UPDATE jogadores SET pontos = pontos + 100 WHERE id=$jogador_id");
+            $sql = "UPDATE jogadores SET pontos = pontos + 100 WHERE id=':jogador_id'";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam('jogador_id', $jogador_id);
             $pontos += 100;
         }
 
@@ -87,7 +111,9 @@ if (!$_SESSION['jogo']['feedback']) {
         $_SESSION['jogo']['inicio_questao'] = $_SESSION['jogo']['inicio_questao'] ?? time();
     }
 } else {
-    $pergunta = $conn->query("SELECT * FROM perguntas WHERE id={$_SESSION['jogo']['pergunta_atual_id']}")->fetch_assoc();
+    $sql = "SELECT * FROM perguntas WHERE id={$_SESSION['jogo']['pergunta_atual_id']}";
+    $stmt = $pdo->prepare($sql);
+    $pergunta = $stmt->fetchAll();
 }
 
 // Calcula tempo restante
