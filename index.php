@@ -29,7 +29,7 @@
             $stmt->bindParam(':codigo', $codigo, PDO::PARAM_STR);
             $stmt->execute();
 
-            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($resultado) {
                 // Código já existe -> faz login
@@ -56,7 +56,6 @@
                 $stmt_insert = $pdo->prepare($sql_insert);
                 $stmt_insert->bindParam(':codigo', $codigo, PDO::PARAM_STR);
                 $stmt_insert->bindParam(':nome', $nome, PDO::PARAM_STR);
-                // $stmt_insert->bindParam(':categoria', $categoria, PDO::PARAM_STR);
 
                 if ($stmt_insert->execute()) {
                     session_regenerate_id(true); // Novo ID de sessão
