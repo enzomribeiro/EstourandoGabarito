@@ -5,7 +5,7 @@
         public function __construct() {
             try {
                 // Conecta ao banco SQLite (Cria o arquivo se não existir)
-                $this->db = new PDO("sqlite:" . __DIR__ . "./quiztecSQLite.db");
+                $this->db = new PDO("sqlite:" . __DIR__ . "/quiztecSQLite.db");
                 $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);    
             } catch (PDOException $th) {
                 die("Erro de conexão com SQLite: " . $th->getMessage());
