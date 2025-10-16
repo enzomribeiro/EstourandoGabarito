@@ -28,7 +28,6 @@
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':codigo', $codigo, PDO::PARAM_STR);
             $stmt->execute();
-
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($resultado) {

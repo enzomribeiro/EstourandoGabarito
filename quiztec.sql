@@ -67,15 +67,6 @@ CREATE TABLE IF NOT EXISTS `jogadores` (
 -- Extraindo dados da tabela `jogadores`
 --
 
-INSERT INTO `jogadores` (`id`, `codigo`, `nome`, `pontos`) VALUES
-(5, '2', 'Vitinho', 300),
-(6, '7', 'MARI', 100),
-(7, '4', 'MARI', 700),
-(8, '9', 'fff', 300),
-(9, '5', 'Enzo', 200),
-(10, '1234', '', 1000),
-(11, '123', 'Guilherme', 3100);
-
 -- --------------------------------------------------------
 
 --
@@ -98,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `perguntas` (
 --
 -- Extraindo dados da tabela `perguntas`
 --
+
 
 INSERT INTO `perguntas` (`id`, `enunciado`, `alternativa_a`, `alternativa_b`, `alternativa_c`, `alternativa_d`, `correta`, `categoria`) VALUES
 (1, 'Quem dirigiu o filme Jurassic Park (1993)?', 'James Cameron', 'Steven Spielberg', 'George Lucas', 'Ridley Scott', 'B', 'Geral'),
@@ -164,8 +156,15 @@ INSERT INTO `perguntas` (`id`, `enunciado`, `alternativa_a`, `alternativa_b`, `a
 (64, 'Qual das seguintes opções é um exemplo de um mamífero?', 'Morcego', 'Tubarão', 'Pinguim', 'Jacaré', 'A', 'Ciência'),
 (65, 'Qual a empresa desenvolveu a franquia Uncharted?', 'Square Enix', 'Ubisoft', 'Naughty Dog', 'Rockstar Games', 'C', 'Games'),
 (66, 'Quem guia o jogador como kaioshin do tempo em Dragon Ball Xenoverse 2?', 'Vados', 'Chronoa', 'Whis', 'Bulma', 'B', 'Games'),
-(67, 'Qual a alternativa apresenta seis biomas brasileiros?', 'Floresta Amazônica, Mata Atlântica, Cerrado, Caatinga, Pantanal e Pampas.', 'Acre, Bahia, Pará, Pernambuco, Sergipe e Manaus.', 'Areia, barro, pedra, argila, palha e seixo.', 'Rio, igarapé, praia, riacho, cachoeira e nascente.', 'A', 'Ciência');
-
+(67, 'Qual a alternativa apresenta seis biomas brasileiros?', 'Floresta Amazônica, Mata Atlântica, Cerrado, Caatinga, Pantanal e Pampas.', 'Acre, Bahia, Pará, Pernambuco, Sergipe e Manaus.', 'Areia, barro, pedra, argila, palha e seixo.', 'Rio, igarapé, praia, riacho, cachoeira e nascente.', 'A', 'Ciência'),
+(68, 'Qual a melhor forma de prevenir a dengue?', 'Tomar vacina todos os anos', 'Eliminar focos de água parada onde o mosquito se reproduz', 'Usar antibióticos ao primeiro sinal de febre', 'Dormir com ventilador ligado', 'B', 'Biologia'),
+(69, 'Qual das alternativas abaixo nâo é considerada uma Infecção Sexualmente Transmissível (IST)?', 'Sífilis', 'Gonorreia', 'Candidíase', 'HPV', 'C', 'Biologia'),
+(70, 'Qual é o maior osso do corpo humano?', 'Úmero', 'Tíbia', 'Fêmur', 'Rádio', 'C', 'Biologia'),
+(71, 'O que é um fumante passivo?', 'Pessoa que fuma cigarros eletrônicos, mas não cigarros comuns', 'Pessoa que fuma apenas socialmente, em festas e eventos', 'Pessoa que parou de fumar há menos de um mês', 'Pessoa que está exposta à fumaça do cigarro de outras pessoas, mesmo sem fumar', 'D', 'Biologia'),
+(72, 'Qual é o principal órgão responsável por metabolizar o álcool consumido?', 'Coração', 'Fígado', 'Rim', 'Pulmão', 'B', 'Biologia'),
+(73, 'Os antibióticos são eficazes no tratamento de infecções causadas por:', 'Vírus', 'Fungos', 'Bactérias', 'Protozoários', 'C', 'Biologia'),
+(74, 'A anemia ocorre principalmente devido à:', 'Falta de vitamina C na alimentação', 'Deficiência de ferro no organismo', 'Excesso de cálcio no sangue', 'Baixa ingestão de proteínas', 'B', 'Biologia'),
+(75, ') O metanol é altamente tóxico para os humanos. Quais são os sintomas iniciais da intoxicação por metanol?', 'Náusea, dor de cabeça, tontura e visão turva', 'Febre alta e calafrios', 'Insônia e hiperatividade', 'Aumento da salivação', 'A', 'Biologia');
 -- --------------------------------------------------------
 
 --
@@ -188,100 +187,6 @@ CREATE TABLE IF NOT EXISTS `respostas` (
 -- Extraindo dados da tabela `respostas`
 --
 
-INSERT INTO `respostas` (`id`, `jogador_id`, `pergunta_id`, `resposta`, `correta`) VALUES
-(1, 1, 1, 'b', 0),
-(2, 1, 2, 'a', 0),
-(3, 2, 2, 'a', 0),
-(4, 3, 2, 'a', 0),
-(5, 4, 1, 'b', 0),
-(6, 2, 1, 'B', 1),
-(7, 5, 1, 'A', 0),
-(8, 5, 5, 'B', 1),
-(9, 5, 4, 'B', 1),
-(10, 5, 7, 'B', 1),
-(11, 6, 2, 'A', 1),
-(12, 6, 9, 'C', 0),
-(13, 6, 10, 'A', 0),
-(14, 7, 1, 'B', 1),
-(15, 7, 2, 'A', 1),
-(16, 7, 9, 'B', 0),
-(17, 7, 10, 'C', 1),
-(18, 7, 12, 'B', 1),
-(19, 7, 13, 'A', 1),
-(20, 7, 14, 'B', 0),
-(21, 7, 15, 'B', 0),
-(22, 7, 16, 'B', 0),
-(23, 7, 17, 'C', 1),
-(24, 7, 18, 'C', 1),
-(25, 8, 2, 'A', 1),
-(26, 8, 9, 'B', 0),
-(27, 8, 10, 'A', 0),
-(28, 8, 12, 'B', 1),
-(29, 8, 13, 'B', 0),
-(30, 8, 14, 'A', 1),
-(31, 8, 15, 'B', 0),
-(32, 8, 16, 'B', 0),
-(33, 8, 17, 'B', 0),
-(34, 8, 18, 'B', 0),
-(35, 10, 1, 'B', 1),
-(36, 10, 4, 'B', 1),
-(37, 10, 5, 'B', 1),
-(38, 9, 1, NULL, 0),
-(39, 10, 7, 'B', 1),
-(40, 10, 11, 'A', 1),
-(41, 10, 19, 'C', 1),
-(42, 10, 20, 'D', 1),
-(43, 9, 4, NULL, 0),
-(44, 10, 21, 'C', 1),
-(45, 9, 5, 'A', 0),
-(46, 10, 22, 'C', 1),
-(47, 10, 23, 'C', 1),
-(48, 9, 7, NULL, 0),
-(49, 9, 11, 'A', 1),
-(50, 9, 19, 'A', 0),
-(51, 9, 20, 'D', 1),
-(52, 9, 21, 'A', 0),
-(53, 9, 22, 'A', 0),
-(54, 9, 23, 'D', 0),
-(55, 11, 1, 'B', 1),
-(56, 11, 4, 'B', 1),
-(57, 11, 5, 'B', 1),
-(58, 11, 7, 'B', 1),
-(59, 11, 11, 'A', 1),
-(60, 11, 19, 'C', 1),
-(61, 11, 20, 'D', 1),
-(62, 11, 21, 'C', 1),
-(63, 11, 22, 'C', 1),
-(64, 11, 23, 'C', 1),
-(65, 11, 6, 'B', 1),
-(66, 11, 24, 'C', 1),
-(67, 11, 25, 'D', 0),
-(68, 11, 26, 'C', 1),
-(69, 11, 27, 'B', 0),
-(70, 11, 28, 'D', 1),
-(71, 11, 29, 'B', 1),
-(72, 11, 30, 'D', 0),
-(73, 11, 31, 'B', 1),
-(74, 11, 32, 'A', 1),
-(75, 11, 2, 'B', 0),
-(76, 11, 9, 'C', 0),
-(77, 11, 10, 'C', 1),
-(78, 11, 12, 'B', 1),
-(79, 11, 13, 'A', 1),
-(80, 11, 14, 'A', 1),
-(81, 11, 15, 'C', 1),
-(82, 11, 16, 'B', 0),
-(83, 11, 17, 'A', 0),
-(84, 11, 18, 'C', 1),
-(85, 11, 8, 'C', 1),
-(86, 11, 33, 'D', 1),
-(87, 11, 34, 'B', 1),
-(88, 11, 35, 'C', 1),
-(89, 11, 37, 'B', 1),
-(90, 11, 39, 'C', 1),
-(91, 11, 41, 'A', 1),
-(92, 11, 43, 'C', 0),
-(93, 11, 44, 'D', 1);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

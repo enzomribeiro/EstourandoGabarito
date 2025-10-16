@@ -4,13 +4,24 @@
 
         public function __construct() {
             try {
+                // Conecta ao banco SQLite (Cria o arquivo se não existir)
                 $this->db = new PDO("sqlite:" . __DIR__ . "./quiztecSQLite.db");
-                $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);    
             } catch (PDOException $th) {
                 die("Erro de conexão com SQLite: " . $th->getMessage());
             }
         }
+        
+        public function UploadSQL(){
+            $sqlFile = __DIR__ . "./quiztecSQLite.sql";
+            //  Se o banco foi recém-criado ou está vazio, executa o script
+            if(file_exists($sqlFile)){
+                $sql = file_get_contents($sqlFile);
+                $this->db->exec($sql);
+            }
+        }
 
+        // Adiciona jogador no bando de dados SQLite
         public function adicionar_player($cod, $nome) {
             try {
                 $sql = "INSERT INTO jogadores (codigo, nome) VALUES (:cod, :nome)";
@@ -23,13 +34,8 @@
 
             } catch (PDOException $e) {
                 echo "Erro ao inserir jogador: " . $e->getMessage();
-
-            } catch (Exception $e){
-                echo "Erro ao gerar número";
-
             }
         }
-
 
         public function listarPerguntas() {
             try {
@@ -43,6 +49,7 @@
             }
         }
 
+        // Adiciona usuário administrador no server MySQL
         function AddUserMySQL($newUser, $newPass){
             $host = 'localhost';
             $db_name = 'quizetec';
