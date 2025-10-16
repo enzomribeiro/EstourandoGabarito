@@ -3,14 +3,29 @@
 include 'conexao.php';
 
 $sql = 'SELECT * FROM jogadores ORDER BY pontos DESC';
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+try {
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log(date('[Y-m-d H:i:s]') . " Erro MySQL RANKING: " . $e->getMessage());
+
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log(date('[Y-m-d H:i:s]') . " Erro SQLite RANKING: " . $e->getMessage());
+        $rows = []; // Garante que $rows esteja definido mesmo em caso de falha
+    }
+}
 
 // Separar top3 e resto
 $top3 = array_slice($rows, 0, 3);
 $resto = array_slice($rows, 3);
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
