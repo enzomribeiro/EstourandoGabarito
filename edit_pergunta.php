@@ -9,9 +9,12 @@ if (!isset($_GET['id'])) {
 
 $id = (int)$_GET['id'];
 
-// Buscar a pergunta pelo ID
-$res = $conn->query("SELECT * FROM perguntas WHERE id=$id");
-$pergunta = $res->fetch_assoc();
+
+$sql = "SELECT * FROM perguntas WHERE id=:id";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':id', $id);
+$stmt->execute();
+$pergunta = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$pergunta) {
     echo "<p>Pergunta não encontrada!</p>";
@@ -22,21 +25,28 @@ if (!$pergunta) {
 // Se enviar atualização
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "UPDATE perguntas SET 
-                enunciado='{$_POST['enunciado']}',
-                alternativa_a='{$_POST['a']}',
-                alternativa_b='{$_POST['b']}',
-                alternativa_c='{$_POST['c']}',
-                alternativa_d='{$_POST['d']}',
-                correta='{$_POST['correta']}',
-                categoria='{$_POST['categoria']}'
-            WHERE id=$id";
+        enunciado = :enunciado,
+        alternativa_a = :a,
+        alternativa_b = :b,
+        alternativa_c = :c,
+        alternativa_d = :d,
+        correta = :correta,
+        categoria = :categoria
+        WHERE id = :id";
 
-    if ($conn->query($sql)) {
-        header("Location: admin.php");
-        exit;
-    } else {
-        echo "Erro: " . $conn->error;
-    }
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':enunciado', $_POST['enunciado']);
+    $stmt->bindParam(':a', $_POST['a']);
+    $stmt->bindParam(':b', $_POST['b']);
+    $stmt->bindParam(':c', $_POST['c']);
+    $stmt->bindParam(':d', $_POST['d']);
+    $stmt->bindParam(':correta', $_POST['correta']);
+    $stmt->bindParam(':categoria', $_POST['categoria']);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    header("Location: admin.php");
+    exit;
+
 }
 ?>
 

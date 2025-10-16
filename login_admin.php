@@ -1,15 +1,21 @@
 <?php
 session_start();
-include "conexao.php";
+include "conexao.php"; // Certifique-se de que o PDO está sendo incluído corretamente
 
 $erro = "";
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $usuario = $_POST['usuario'];
-    $senha = $_POST['senha'];
+    $usuario = trim($_POST['usuario']);
+    $senha = trim($_POST['senha']);
 
-    $result = $conn->query("SELECT * FROM admins WHERE usuario='$usuario' AND senha=SHA2('$senha', 256)");
-    if ($result->num_rows == 1) {
+    // Alterando de $conn para $pdo
+    $sql = "SELECT * FROM admins WHERE usuario = :usuario AND senha = SHA2(:senha,256)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':usuario', $usuario, PDO::PARAM_STR);
+    $stmt->bindParam(':senha', $senha, PDO::PARAM_STR);
+    $stmt->execute();
+
+    if ($stmt->rowCount() == 1) {
         $_SESSION['admin'] = $usuario;
         header("Location: admin.php");
         exit;
@@ -22,9 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Login Admin - QuizTec</title>
-<link rel="stylesheet" href="css/style_Admin.css">
+    <meta charset="UTF-8">
+    <title>Login Admin - QuizTec</title>
+    <link rel="stylesheet" href="css/style_Admin.css">
 </head>
 <body>
 <h1>Login Admin</h1>

@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 session_start();
 session_regenerate_id(true);
 include "conexao.php";
@@ -70,13 +71,90 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
+=======
+    session_start();
+    session_regenerate_id(true);
+    include "conexao.php";
+    include "./VAMGLibsPHP/VAMGFile.php";
+
+    $error = "";
+    $codigo_val = "";
+    $nome_val = "";
+    $categoria_val = "Geral";
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $codigo    = trim($_POST['codigo'] ?? "");
+        $nome      = trim($_POST['nome'] ?? "");
+        $categoria = $_POST['categoria'] ?? "Geral";
+
+        // Guarda para reapresentar em caso de erro
+        $codigo_val = htmlspecialchars($codigo, ENT_QUOTES);
+        $nome_val   = htmlspecialchars($nome, ENT_QUOTES);
+        $categoria_val = $categoria;
+
+        // Validações básicas
+        if ($codigo === "" || $nome === "") {
+            $error = "Preencha código e nome corretamente.";
+        } else {
+            // 1) Verifica se já existe jogador com esse código
+            $sql = "SELECT id, nome FROM jogadores WHERE codigo = :codigo LIMIT 1";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':codigo', $codigo, PDO::PARAM_STR);
+            $stmt->execute();
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($resultado) {
+                // Código já existe -> faz login
+                session_regenerate_id(true); // Gera novo ID de sessão
+                $_SESSION['jogador_id'] = $resultado['id'];
+                $_SESSION['jogador_nome'] = $resultado['nome'];
+                $_SESSION['categoria'] = $categoria;
+                header("Location: jogo.php");
+                exit;
+            }
+
+            // 2) Verifica se já existe jogador com esse NOME (case-insensitive)
+            $sql_nome = "SELECT id, codigo FROM jogadores WHERE LOWER(nome) = LOWER(:nome) LIMIT 1";
+            $stmt_nome = $pdo->prepare($sql_nome);
+            $stmt_nome->bindParam(':nome', $nome, PDO::PARAM_STR);
+            $stmt_nome->execute();
+            $res_nome = $stmt_nome->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($res_nome) {
+                $error = "⚠️ Este nome já está em uso. Escolha outro nome.";
+            } else {
+                // 3) Insere novo jogador
+                $sql_insert = "INSERT INTO jogadores (codigo, nome) VALUES (:codigo, :nome)";
+                $stmt_insert = $pdo->prepare($sql_insert);
+                $stmt_insert->bindParam(':codigo', $codigo, PDO::PARAM_STR);
+                $stmt_insert->bindParam(':nome', $nome, PDO::PARAM_STR);
+
+                if ($stmt_insert->execute()) {
+                    session_regenerate_id(true); // Novo ID de sessão
+                    $_SESSION['jogador_id'] = $pdo->lastInsertId();
+                    $_SESSION['jogador_nome'] = $nome;
+                    $_SESSION['categoria'] = $categoria;
+
+                    // Registra localmente no banco de dados
+                    $backup = new BackupBD();
+                    $backup->adicionar_player($codigo, $nome);
+
+                    header("Location: jogo.php");
+                    exit;
+                } else {
+                    $error = "Erro ao registrar jogador. Tente novamente.";
+                }
+            }
+        }
+    }
+>>>>>>> Pronto
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Estourando o Gabarito - Login</title>
-    <link rel="stylesheet" href="css/style_Home.css">
+    <link rel="stylesheet" href="./css/style_Home.css">
 </head>
 <body>
     <h1>Bem-vindo ao Estourando o Gabarito</h1>
@@ -114,7 +192,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="menu">
         <a href="ranking.php">🏆 Ver Ranking</a>
-        <a href="admin.php">⚙️ Área do Admin</a>
+        <a href="./login_admin.php">⚙️ Área do Admin</a>
     </div>
 </body>
 </html>

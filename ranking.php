@@ -1,16 +1,16 @@
 <?php
 // ranking.php
+<<<<<<< HEAD
 session_start();
 include 'conexao.php'; // garante que puxa o arquivo da mesma pasta
+=======
+include 'conexao.php';
+>>>>>>> Pronto
 
-// Pegar jogadores ordenados por pontos
-$sql = "SELECT * FROM jogadores ORDER BY pontos DESC";
-$res = $conn->query($sql);
-
-$rows = [];
-while ($row = $res->fetch_assoc()) {
-    $rows[] = $row;
-}
+$sql = 'SELECT * FROM jogadores ORDER BY pontos DESC';
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Separar top3 e resto
 $top3 = array_slice($rows, 0, 3);
@@ -50,6 +50,7 @@ $resto = array_slice($rows, 3);
     </div>
 
     <!-- Tabela dos demais -->
+    <?php if (!empty($resto)): ?>
     <table>
         <tr><th>ID Jogador</th><th>Posição</th><th>Jogador</th><th>Pontos</th></tr>
         <?php 
@@ -65,6 +66,7 @@ $resto = array_slice($rows, 3);
         }
         ?>
     </table>
+    <?php endif; ?>
 
     <div class="button"><a href="index.php">HOME</a></div>
 </body>
