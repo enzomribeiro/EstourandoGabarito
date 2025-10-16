@@ -2,9 +2,9 @@
 	$host = 'localhost';
 	$db_name = 'quizetec'; // nome original quizetec
 	
-	$dsn = "mysql:host=$host;dbname=$db_name;port=3307;charset=utf8mb4";
+	$dsn = "mysql:host=$host;dbname=$db_name;port=3306;charset=utf8mb4";
 	$username = "root";
-	$pass = '12345678';
+	$pass = '';
 	
 	try{
 		$pdo = new PDO($dsn, $username, $pass);

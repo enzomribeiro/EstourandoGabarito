@@ -32,7 +32,7 @@ if (isset($_POST['update_id'])) {
     $categoria = $_POST['categoria'];
 
 
-    $sql = "UPDATE perguntas SET enunciado=':enunciado', alternativa_a=':a', alternativa_b=':b', alternativa_c=':c', alternativa_d=':d', correta=':correta', categoria=':categoria' WHERE id=':id'";
+    $sql = "UPDATE perguntas SET enunciado=:enunciado, alternativa_a=:a, alternativa_b=:b, alternativa_c=:c, alternativa_d=:d, correta=:correta, categoria=:categoria WHERE id=:id";
     $stmt = $pdo->prepare($sql);
 
     $stmt->bindParam(":enunciado", $enunciado);
