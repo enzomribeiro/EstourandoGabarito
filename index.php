@@ -1,77 +1,118 @@
 <?php
-    session_start();
-    session_regenerate_id(true);
-    include "conexao.php";
-    include "./VAMGLibsPHP/VAMGFile.php";
+session_start();
+session_regenerate_id(true);
+include "conexao.php";
+include "./VAMGLibsPHP/VAMGFile.php";
 
-    $error = "";
-    $codigo_val = "";
-    $nome_val = "";
-    $categoria_val = "Geral";
+$error = "";
+$codigo_val = "";
+$nome_val = "";
+$categoria_val = "Geral";
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $codigo    = trim($_POST['codigo'] ?? "");
-        $nome      = trim($_POST['nome'] ?? "");
-        $categoria = $_POST['categoria'] ?? "Geral";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $codigo    = trim($_POST['codigo'] ?? "");
+    $nome      = trim($_POST['nome'] ?? "");
+    $categoria = $_POST['categoria'] ?? "Geral";
 
-        // Guarda para reapresentar em caso de erro
-        $codigo_val = htmlspecialchars($codigo, ENT_QUOTES);
-        $nome_val   = htmlspecialchars($nome, ENT_QUOTES);
-        $categoria_val = $categoria;
+    // Guarda para reapresentar em caso de erro
+    $codigo_val = htmlspecialchars($codigo, ENT_QUOTES);
+    $nome_val   = htmlspecialchars($nome, ENT_QUOTES);
+    $categoria_val = $categoria;
 
-        // Validações básicas
-        if ($codigo === "" || $nome === "") {
-            $error = "Preencha código e nome corretamente.";
-        } else {
-            // 1) Verifica se já existe jogador com esse código
-            $sql = "SELECT id, nome FROM jogadores WHERE codigo = :codigo LIMIT 1";
+    // Validações básicas
+    if ($codigo === "" || $nome === "") {
+        $error = "Preencha código e nome corretamente.";
+    } else {
+        // 1) Verifica se já existe jogador com esse código
+        $sql = "SELECT id, nome FROM jogadores WHERE codigo = :codigo LIMIT 1";
+        try {
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':codigo', $codigo, PDO::PARAM_STR);
             $stmt->execute();
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($resultado) {
-                // Código já existe -> faz login
-                session_regenerate_id(true); // Gera novo ID de sessão
-                $_SESSION['jogador_id'] = $resultado['id'];
-                $_SESSION['jogador_nome'] = $resultado['nome'];
-                $_SESSION['categoria'] = $categoria;
-                header("Location: jogo.php");
-                exit;
+        } catch (PDOException $e) {
+            error_log(date('[Y-m-d H:i:s]') . " Erro MySQL SELECT código: " . $e->getMessage() . " | Código: $codigo");
+            try {
+                $stmt = $db->prepare($sql);
+                $stmt->bindParam(':codigo', $codigo, PDO::PARAM_STR);
+                $stmt->execute();
+                $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                error_log(date('[Y-m-d H:i:s]') . " Erro SQLite SELECT código: " . $e->getMessage() . " | Código: $codigo");
+                $resultado = false;
             }
+        }
 
-            // 2) Verifica se já existe jogador com esse NOME (case-insensitive)
-            $sql_nome = "SELECT id, codigo FROM jogadores WHERE LOWER(nome) = LOWER(:nome) LIMIT 1";
+        if ($resultado) {
+            // Código já existe -> faz login
+            session_regenerate_id(true);
+            $_SESSION['jogador_id'] = $resultado['id'];
+            $_SESSION['jogador_nome'] = $resultado['nome'];
+            $_SESSION['categoria'] = $categoria;
+            header("Location: jogo.php");
+            exit;
+        }
+
+        // 2) Verifica se já existe jogador com esse NOME (case-insensitive)
+        $sql_nome = "SELECT id, codigo FROM jogadores WHERE LOWER(nome) = LOWER(:nome) LIMIT 1";
+        try {
             $stmt_nome = $pdo->prepare($sql_nome);
             $stmt_nome->bindParam(':nome', $nome, PDO::PARAM_STR);
             $stmt_nome->execute();
             $res_nome = $stmt_nome->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log(date('[Y-m-d H:i:s]') . " Erro MySQL SELECT nome: " . $e->getMessage() . " | Nome: $nome");
+            try {
+                $stmt_nome = $db->prepare($sql_nome);
+                $stmt_nome->bindParam(':nome', $nome, PDO::PARAM_STR);
+                $stmt_nome->execute();
+                $res_nome = $stmt_nome->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                error_log(date('[Y-m-d H:i:s]') . " Erro SQLite SELECT nome: " . $e->getMessage() . " | Nome: $nome");
+                $res_nome = false;
+            }
+        }
 
-            if ($res_nome) {
-                $error = "⚠️ Este nome já está em uso. Escolha outro nome.";
-            } else {
-                // 3) Insere novo jogador
-                $sql_insert = "INSERT INTO jogadores (codigo, nome) VALUES (:codigo, :nome)";
+        if ($res_nome) {
+            $error = "⚠️ Este nome já está em uso. Escolha outro nome.";
+        } else {
+            // 3) Insere novo jogador
+            $sql_insert = "INSERT INTO jogadores (codigo, nome) VALUES (:codigo, :nome)";
+            try {
                 $stmt_insert = $pdo->prepare($sql_insert);
                 $stmt_insert->bindParam(':codigo', $codigo, PDO::PARAM_STR);
                 $stmt_insert->bindParam(':nome', $nome, PDO::PARAM_STR);
-
-                if ($stmt_insert->execute()) {
-                    session_regenerate_id(true); // Novo ID de sessão
-                    $_SESSION['jogador_id'] = $pdo->lastInsertId();
-                    $_SESSION['jogador_nome'] = $nome;
-                    $_SESSION['categoria'] = $categoria;
-
-                    header("Location: jogo.php");
-                    exit;
-                } else {
-                    $error = "Erro ao registrar jogador. Tente novamente.";
-                    
+                $stmt_insert->execute();
+                $lastId = $pdo->lastInsertId();
+            } catch (PDOException $e) {
+                error_log(date('[Y-m-d H:i:s]') . " Erro MySQL INSERT jogador: " . $e->getMessage());
+                try {
+                    $stmt_insert = $db->prepare($sql_insert);
+                    $stmt_insert->bindParam(':codigo', $codigo, PDO::PARAM_STR);
+                    $stmt_insert->bindParam(':nome', $nome, PDO::PARAM_STR);
+                    $stmt_insert->execute();
+                    $lastId = $db->lastInsertId();
+                } catch (PDOException $e) {
+                    error_log(date('[Y-m-d H:i:s]') . " Erro SQLite INSERT jogador: " . $e->getMessage());
+                    $lastId = null;
                 }
+            }
+
+            if ($lastId) {
+                session_regenerate_id(true);
+                $_SESSION['jogador_id'] = $lastId;
+                $_SESSION['jogador_nome'] = $nome;
+                $_SESSION['categoria'] = $categoria;
+                header("Location: jogo.php");
+                exit;
+            } else {
+                $error = "Erro ao registrar jogador. Tente novamente.";
             }
         }
     }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
