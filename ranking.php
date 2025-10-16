@@ -1,11 +1,8 @@
 <?php
 // ranking.php
-<<<<<<< HEAD
 session_start();
 include 'conexao.php'; // garante que puxa o arquivo da mesma pasta
-=======
 include 'conexao.php';
->>>>>>> Pronto
 
 $sql = 'SELECT * FROM jogadores ORDER BY pontos DESC';
 $stmt = $pdo->prepare($sql);

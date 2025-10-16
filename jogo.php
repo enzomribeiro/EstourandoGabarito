@@ -11,21 +11,6 @@ if (!isset($_SESSION['jogador_id']) || !isset($_SESSION['categoria'])) {
 $jogador_id = (int)$_SESSION['jogador_id'];
 $categoria  = $_SESSION['categoria'];
 
-<<<<<<< HEAD
-// Pega dados do jogador
-$result = $conn->query("SELECT nome, pontos FROM jogadores WHERE id=$jogador_id");
-if (!$result) die("Erro na query: " . $conn->error);
-if ($result->num_rows == 0) die("Jogador não encontrado.");
-$dados_jogador = $result->fetch_assoc();
-$pontos = $dados_jogador['pontos'];
-$nome_jogador = $dados_jogador['nome'];
-
-// Constantes
-define('TEMPO_QUESTAO', 20);
-define('TEMPO_FEEDBACK', 6);
-
-// Inicializa sessão de controle de jogo
-=======
 try {
     $sql = "SELECT nome, pontos FROM jogadores WHERE id = :jogador_id";
     $stmt = $pdo->prepare($sql);
@@ -44,7 +29,6 @@ try {
 define('TEMPO_QUESTAO', 20);
 define('TEMPO_FEEDBACK', 6);
 
->>>>>>> Pronto
 if (!isset($_SESSION['jogo'])) {
     $_SESSION['jogo'] = [
         'pergunta_atual_id' => null,
@@ -56,26 +40,6 @@ if (!isset($_SESSION['jogo'])) {
     ];
 }
 
-<<<<<<< HEAD
-// Função para pegar próxima pergunta não respondida
-function proximaPergunta($conn, $categoria, $jogador_id) {
-    return $conn->query("SELECT * FROM perguntas 
-        WHERE categoria='$categoria' 
-        AND id NOT IN (SELECT pergunta_id FROM respostas WHERE jogador_id=$jogador_id) 
-        ORDER BY id ASC
-        LIMIT 1")->fetch_assoc();
-}
-
-// Processa POST de resposta se não estiver em feedback
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !$_SESSION['jogo']['feedback']) {
-    $resposta_usuario = $_POST['resp'] ?? null;
-
-    // Busca a pergunta atual
-    if ($_SESSION['jogo']['pergunta_atual_id']) {
-        $pergunta = $conn->query("SELECT * FROM perguntas WHERE id={$_SESSION['jogo']['pergunta_atual_id']}")->fetch_assoc();
-    } else {
-        $pergunta = proximaPergunta($conn, $categoria, $jogador_id);
-=======
 function proximaPergunta($pdo, $categoria, $jogador_id) {
     $sql = "SELECT * FROM perguntas WHERE categoria = :categoria AND id NOT IN (
                 SELECT pergunta_id FROM respostas WHERE jogador_id = :jogador_id
@@ -98,26 +62,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$_SESSION['jogo']['feedback']) {
         $pergunta = $stmt->fetch(PDO::FETCH_ASSOC);
     } else {
         $pergunta = proximaPergunta($pdo, $categoria, $jogador_id);
->>>>>>> Pronto
     }
 
     if ($pergunta) {
         $resposta_correta = $pergunta['correta'];
         $correta = ($resposta_usuario == $resposta_correta) ? 1 : 0;
 
-<<<<<<< HEAD
-        // Salva resposta no banco
-        $conn->query("INSERT INTO respostas (jogador_id, pergunta_id, resposta, correta) 
-                      VALUES ($jogador_id, {$pergunta['id']}, ".($resposta_usuario ? "'$resposta_usuario'" : "NULL").", $correta)");
-
-        // Atualiza pontos se acertou
-        if ($correta) {
-            $conn->query("UPDATE jogadores SET pontos = pontos + 100 WHERE id=$jogador_id");
-            $pontos += 100;
-        }
-
-        // Define feedback na sessão
-=======
         $sql = "INSERT INTO respostas (jogador_id, pergunta_id, resposta, correta)
                 VALUES (:jogador_id, :pergunta_id, :resposta, :correta)";
         $stmt = $pdo->prepare($sql);
@@ -135,7 +85,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$_SESSION['jogo']['feedback']) {
             $pontos += 100;
         }
 
->>>>>>> Pronto
         $_SESSION['jogo']['feedback'] = [
             'resposta_usuario' => $resposta_usuario,
             'resposta_correta' => $resposta_correta,
@@ -145,25 +94,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$_SESSION['jogo']['feedback']) {
     }
 }
 
-<<<<<<< HEAD
-// Define a pergunta atual se não estiver em feedback
-if (!$_SESSION['jogo']['feedback']) {
-    $pergunta = proximaPergunta($conn, $categoria, $jogador_id);
-=======
 if (!$_SESSION['jogo']['feedback']) {
     $pergunta = proximaPergunta($pdo, $categoria, $jogador_id);
->>>>>>> Pronto
     if ($pergunta) {
         $_SESSION['jogo']['pergunta_atual_id'] = $pergunta['id'];
         $_SESSION['jogo']['inicio_questao'] = $_SESSION['jogo']['inicio_questao'] ?? time();
     }
 } else {
-<<<<<<< HEAD
-    $pergunta = $conn->query("SELECT * FROM perguntas WHERE id={$_SESSION['jogo']['pergunta_atual_id']}")->fetch_assoc();
-}
-
-// Calcula tempo restante
-=======
     $sql = "SELECT * FROM perguntas WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':id', $_SESSION['jogo']['pergunta_atual_id'], PDO::PARAM_INT);
@@ -171,20 +108,10 @@ if (!$_SESSION['jogo']['feedback']) {
     $pergunta = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
->>>>>>> Pronto
 if ($_SESSION['jogo']['feedback']) {
     $tempo_passado = time() - $_SESSION['jogo']['inicio_feedback'];
     $tempo_restante = TEMPO_FEEDBACK - $tempo_passado;
     if ($tempo_restante <= 0) {
-<<<<<<< HEAD
-        // Limpa feedback e vai para próxima pergunta
-        $_SESSION['jogo']['feedback'] = null;
-        $_SESSION['jogo']['inicio_feedback'] = null;
-        $_SESSION['jogo']['resposta_usuario'] = null;
-        $_SESSION['jogo']['resposta_correta'] = null;
-        $_SESSION['jogo']['pergunta_atual_id'] = null;
-        $_SESSION['jogo']['inicio_questao'] = null;
-=======
         $_SESSION['jogo'] = [
             'pergunta_atual_id' => null,
             'inicio_questao' => null,
@@ -193,7 +120,6 @@ if ($_SESSION['jogo']['feedback']) {
             'resposta_usuario' => null,
             'resposta_correta' => null,
         ];
->>>>>>> Pronto
         header("Location: jogo.php");
         exit;
     }
@@ -201,10 +127,6 @@ if ($_SESSION['jogo']['feedback']) {
     $tempo_passado = time() - $_SESSION['jogo']['inicio_questao'];
     $tempo_restante = TEMPO_QUESTAO - $tempo_passado;
     if ($tempo_restante <= 0) {
-<<<<<<< HEAD
-        // Timeout automático
-=======
->>>>>>> Pronto
         $_POST['timeout'] = 1;
         $_POST['resp'] = null;
         header("Location: jogo.php");
