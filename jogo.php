@@ -10,29 +10,20 @@ if (!isset($_SESSION['jogador_id']) || !isset($_SESSION['categoria'])) {
 $jogador_id = (int)$_SESSION['jogador_id'];
 $categoria  = $_SESSION['categoria'];
 
-// Buscar dados do jogador
-$sql = "SELECT nome, pontos FROM jogadores WHERE id = :jogador_id";
 try {
+    $sql = "SELECT nome, pontos FROM jogadores WHERE id = :jogador_id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':jogador_id', $jogador_id, PDO::PARAM_INT);
     $stmt->execute();
-    $dados = $stmt->fetch(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    error_log(date('[Y-m-d H:i:s]') . " Erro MySQL jogador: " . $e->getMessage());
-    try {
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(':jogador_id', $jogador_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $dados = $stmt->fetch(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        error_log(date('[Y-m-d H:i:s]') . " Erro SQLite jogador: " . $e->getMessage());
-        die("Erro ao carregar jogador.");
-    }
-}
 
-if (!$dados) die("Jogador não encontrado.");
-$pontos = $dados['pontos'];
-$nome_jogador = $dados['nome'];
+    $dados = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$dados) die("Jogador não encontrado.");
+
+    $pontos = $dados['pontos'];
+    $nome_jogador = $dados['nome'];
+} catch (PDOException $e) {
+    die("Erro na query: " . $e->getMessage());
+}
 
 define('TEMPO_QUESTAO', 20);
 define('TEMPO_FEEDBACK', 6);
@@ -48,29 +39,15 @@ if (!isset($_SESSION['jogo'])) {
     ];
 }
 
-function proximaPergunta($pdo, $db, $categoria, $jogador_id) {
+function proximaPergunta($pdo, $categoria, $jogador_id) {
     $sql = "SELECT * FROM perguntas WHERE categoria = :categoria AND id NOT IN (
                 SELECT pergunta_id FROM respostas WHERE jogador_id = :jogador_id
             ) ORDER BY id ASC LIMIT 1";
-    try {
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':categoria', $categoria);
-        $stmt->bindParam(':jogador_id', $jogador_id);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        error_log(date('[Y-m-d H:i:s]') . " Erro MySQL próxima pergunta: " . $e->getMessage());
-        try {
-            $stmt = $db->prepare($sql);
-            $stmt->bindParam(':categoria', $categoria);
-            $stmt->bindParam(':jogador_id', $jogador_id);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log(date('[Y-m-d H:i:s]') . " Erro SQLite próxima pergunta: " . $e->getMessage());
-            return null;
-        }
-    }
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':categoria', $categoria);
+    $stmt->bindParam(':jogador_id', $jogador_id);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !$_SESSION['jogo']['feedback']) {
@@ -78,25 +55,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$_SESSION['jogo']['feedback']) {
 
     if ($_SESSION['jogo']['pergunta_atual_id']) {
         $sql = "SELECT * FROM perguntas WHERE id = :id";
-        try {
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':id', $_SESSION['jogo']['pergunta_atual_id'], PDO::PARAM_INT);
-            $stmt->execute();
-            $pergunta = $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log(date('[Y-m-d H:i:s]') . " Erro MySQL pergunta atual: " . $e->getMessage());
-            try {
-                $stmt = $db->prepare($sql);
-                $stmt->bindParam(':id', $_SESSION['jogo']['pergunta_atual_id'], PDO::PARAM_INT);
-                $stmt->execute();
-                $pergunta = $stmt->fetch(PDO::FETCH_ASSOC);
-            } catch (PDOException $e) {
-                error_log(date('[Y-m-d H:i:s]') . " Erro SQLite pergunta atual: " . $e->getMessage());
-                $pergunta = null;
-            }
-        }
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':id', $_SESSION['jogo']['pergunta_atual_id'], PDO::PARAM_INT);
+        $stmt->execute();
+        $pergunta = $stmt->fetch(PDO::FETCH_ASSOC);
     } else {
-        $pergunta = proximaPergunta($pdo, $db, $categoria, $jogador_id);
+        $pergunta = proximaPergunta($pdo, $categoria, $jogador_id);
     }
 
     if ($pergunta) {
@@ -105,45 +69,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$_SESSION['jogo']['feedback']) {
 
         $sql = "INSERT INTO respostas (jogador_id, pergunta_id, resposta, correta)
                 VALUES (:jogador_id, :pergunta_id, :resposta, :correta)";
-        try {
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':jogador_id', $jogador_id);
-            $stmt->bindParam(':pergunta_id', $pergunta['id']);
-            $stmt->bindParam(':resposta', $resposta_usuario);
-            $stmt->bindParam(':correta', $correta);
-            $stmt->execute();
-        } catch (PDOException $e) {
-            error_log(date('[Y-m-d H:i:s]') . " Erro MySQL INSERT resposta: " . $e->getMessage());
-            try {
-                $stmt = $db->prepare($sql);
-                $stmt->bindParam(':jogador_id', $jogador_id);
-                $stmt->bindParam(':pergunta_id', $pergunta['id']);
-                $stmt->bindParam(':resposta', $resposta_usuario);
-                $stmt->bindParam(':correta', $correta);
-                $stmt->execute();
-            } catch (PDOException $e) {
-                error_log(date('[Y-m-d H:i:s]') . " Erro SQLite INSERT resposta: " . $e->getMessage());
-            }
-        }
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':jogador_id', $jogador_id);
+        $stmt->bindParam(':pergunta_id', $pergunta['id']);
+        $stmt->bindParam(':resposta', $resposta_usuario);
+        $stmt->bindParam(':correta', $correta);
+        $stmt->execute();
 
         if ($correta) {
             $sql = "UPDATE jogadores SET pontos = pontos + 100 WHERE id = :jogador_id";
-            try {
-                $stmt = $pdo->prepare($sql);
-                $stmt->bindParam(':jogador_id', $jogador_id);
-                $stmt->execute();
-                $pontos += 100;
-            } catch (PDOException $e) {
-                error_log(date('[Y-m-d H:i:s]') . " Erro MySQL UPDATE pontos: " . $e->getMessage());
-                try {
-                    $stmt = $db->prepare($sql);
-                    $stmt->bindParam(':jogador_id', $jogador_id);
-                    $stmt->execute();
-                    $pontos += 100;
-                } catch (PDOException $e) {
-                    error_log(date('[Y-m-d H:i:s]') . " Erro SQLite UPDATE pontos: " . $e->getMessage());
-                }
-            }
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':jogador_id', $jogador_id);
+            $stmt->execute();
+            $pontos += 100;
         }
 
         $_SESSION['jogo']['feedback'] = [
@@ -156,37 +94,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$_SESSION['jogo']['feedback']) {
 }
 
 if (!$_SESSION['jogo']['feedback']) {
-    $pergunta = proximaPergunta($pdo, $db, $categoria, $jogador_id);
+    $pergunta = proximaPergunta($pdo, $categoria, $jogador_id);
     if ($pergunta) {
         $_SESSION['jogo']['pergunta_atual_id'] = $pergunta['id'];
         $_SESSION['jogo']['inicio_questao'] = $_SESSION['jogo']['inicio_questao'] ?? time();
     }
 } else {
     $sql = "SELECT * FROM perguntas WHERE id = :id";
-    try {
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':id', $_SESSION['jogo']['pergunta_atual_id'], PDO::PARAM_INT);
-        $stmt->execute();
-        $pergunta = $stmt->fetch(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        error_log(date('[Y-m-d H:i:s]') . " Erro MySQL SELECT pergunta feedback: " . $e->getMessage());
-        try {
-            $stmt = $db->prepare($sql);
-            $stmt->bindParam(':id', $_SESSION['jogo']['pergunta_atual_id'], PDO::PARAM_INT);
-            $stmt->execute();
-            $pergunta = $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log(date('[Y-m-d H:i:s]') . " Erro SQLite SELECT pergunta feedback: " . $e->getMessage());
-            $pergunta = null;
-        }
-    }
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':id', $_SESSION['jogo']['pergunta_atual_id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $pergunta = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 if ($_SESSION['jogo']['feedback']) {
     $tempo_passado = time() - $_SESSION['jogo']['inicio_feedback'];
-        $tempo_passado = time() - $_SESSION['jogo']['inicio_feedback'];
     $tempo_restante = TEMPO_FEEDBACK - $tempo_passado;
-
     if ($tempo_restante <= 0) {
         $_SESSION['jogo'] = [
             'pergunta_atual_id' => null,
@@ -202,7 +125,6 @@ if ($_SESSION['jogo']['feedback']) {
 } else if ($pergunta) {
     $tempo_passado = time() - $_SESSION['jogo']['inicio_questao'];
     $tempo_restante = TEMPO_QUESTAO - $tempo_passado;
-
     if ($tempo_restante <= 0) {
         $_POST['timeout'] = 1;
         $_POST['resp'] = null;
