@@ -1,6 +1,7 @@
 <?php 
 session_start();
 include "conexao.php";
+include "./VAMGLibsPHP/VAMGFile.php";
 
 // Verifica se o admin está logado
 if (!isset($_SESSION['admin'])) {
@@ -11,10 +12,24 @@ if (!isset($_SESSION['admin'])) {
 // Função para deletar pergunta
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    
-    $sql = "DELETE FROM perguntas WHERE id=$id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $sql = "DELETE FROM perguntas WHERE id = :id";
+
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+    } catch (PDOException $e) {
+        error_log(date('[Y-m-d H:i:s]') . " Erro MySQL DELETE: " . $e->getMessage() . " | ID: $id");
+
+        try {
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            error_log(date('[Y-m-d H:i:s]') . " Erro SQLite DELETE: " . $e->getMessage() . " | ID: $id");
+        }
+    }
+
     header("Location: admin.php");
     exit;
 }
@@ -22,7 +37,6 @@ if (isset($_GET['delete'])) {
 // Função para atualizar pergunta
 if (isset($_POST['update_id'])) {
     $id = (int)$_POST['update_id'];
-
     $enunciado = $_POST['enunciado'];
     $a = $_POST['a'];
     $b = $_POST['b'];
@@ -31,26 +45,44 @@ if (isset($_POST['update_id'])) {
     $correta = strtoupper($_POST['correta']);
     $categoria = $_POST['categoria'];
 
+    $sql = "UPDATE perguntas SET enunciado=:enunciado, alternativa_a=:a, alternativa_b=:b, alternativa_c=:c, alternativa_d=:d, correta=:correta, categoria=:categoria WHERE id=:id";
 
-    $sql = "UPDATE perguntas SET enunciado=':enunciado', alternativa_a=':a', alternativa_b=':b', alternativa_c=':c', alternativa_d=':d', correta=':correta', categoria=':categoria' WHERE id=':id'";
-    $stmt = $pdo->prepare($sql);
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(":enunciado", $enunciado);
+        $stmt->bindParam(":a", $a);
+        $stmt->bindParam(":b", $b);
+        $stmt->bindParam(":c", $c);
+        $stmt->bindParam(":d", $d);
+        $stmt->bindParam(":correta", $correta);
+        $stmt->bindParam(":categoria", $categoria);
+        $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+        $stmt->execute();
+    } catch (PDOException $e) {
+        error_log(date('[Y-m-d H:i:s]') . " Erro MySQL UPDATE: " . $e->getMessage() . " | ID: $id");
 
-    $stmt->bindParam(":enunciado", $enunciado);
-    $stmt->bindParam(":id", $id);
-    $stmt->bindParam(":a", $a);
-    $stmt->bindParam(":b", $b);
-    $stmt->bindParam(":c", $c);
-    $stmt->bindParam(":d", $d);
-    $stmt->bindParam(":correta", $correta);
-    $stmt->bindParam(":correta", $categoria);
+        try {
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(":enunciado", $enunciado);
+            $stmt->bindParam(":a", $a);
+            $stmt->bindParam(":b", $b);
+            $stmt->bindParam(":c", $c);
+            $stmt->bindParam(":d", $d);
+            $stmt->bindParam(":correta", $correta);
+            $stmt->bindParam(":categoria", $categoria);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            error_log(date('[Y-m-d H:i:s]') . " Erro SQLite UPDATE: " . $e->getMessage() . " | ID: $id");
+        }
+    }
+
     header("Location: admin.php");
     exit;
 }
 
 // Cadastro de nova pergunta
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['update_id'])) {
-
-
     $enunciado = $_POST['enunciado'];
     $a = $_POST['a'];
     $b = $_POST['b'];
@@ -61,18 +93,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['update_id'])) {
 
     $sql = "INSERT INTO perguntas (enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, correta, categoria) 
             VALUES (:enunciado, :a, :b, :c, :d, :correta, :categoria)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(":enunciado", $enunciado);
-    $stmt->bindParam(":a", $a);
-    $stmt->bindParam(":b", $b);
-    $stmt->bindParam(":c", $c);
-    $stmt->bindParam(":d", $d);
-    $stmt->bindParam(":correta", $correta);
-    $stmt->bindParam(":categoria", $categoria);
-    $stmt->execute();
+
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(":enunciado", $enunciado);
+        $stmt->bindParam(":a", $a);
+        $stmt->bindParam(":b", $b);
+        $stmt->bindParam(":c", $c);
+        $stmt->bindParam(":d", $d);
+        $stmt->bindParam(":correta", $correta);
+        $stmt->bindParam(":categoria", $categoria);
+        $stmt->execute();
+    } catch (PDOException $e) {
+        error_log(date('[Y-m-d H:i:s]') . " Erro MySQL INSERT: " . $e->getMessage());
+
+        try {
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(":enunciado", $enunciado);
+            $stmt->bindParam(":a", $a);
+            $stmt->bindParam(":b", $b);
+            $stmt->bindParam(":c", $c);
+            $stmt->bindParam(":d", $d);
+            $stmt->bindParam(":correta", $correta);
+            $stmt->bindParam(":categoria", $categoria);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            error_log(date('[Y-m-d H:i:s]') . " Erro SQLite INSERT: " . $e->getMessage());
+        }
+    }
+
     header("Location: admin.php");
+    exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-BR">

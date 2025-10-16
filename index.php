@@ -62,14 +62,11 @@
                     $_SESSION['jogador_nome'] = $nome;
                     $_SESSION['categoria'] = $categoria;
 
-                    // Registra localmente no banco de dados
-                    $backup = new BackupBD();
-                    $backup->adicionar_player($codigo, $nome);
-
                     header("Location: jogo.php");
                     exit;
                 } else {
                     $error = "Erro ao registrar jogador. Tente novamente.";
+                    
                 }
             }
         }

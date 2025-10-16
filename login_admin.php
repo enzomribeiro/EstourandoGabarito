@@ -1,7 +1,6 @@
 <?php
 session_start();
 include "conexao.php"; // Certifique-se de que o PDO está sendo incluído corretamente
-
 $erro = "";
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -9,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $senha = trim($_POST['senha']);
 
     // Alterando de $conn para $pdo
-    $sql = "SELECT * FROM admins WHERE usuario = :usuario AND senha = :senha";
+    $sql = "SELECT * FROM admins WHERE usuario = :usuario AND senha = SHA2(:senha, 256)";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':usuario', $usuario, PDO::PARAM_STR);
     $stmt->bindParam(':senha', $senha, PDO::PARAM_STR);
